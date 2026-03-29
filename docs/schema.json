@@ -1,0 +1,195 @@
+{
+  "database": {
+    "tables": [
+      {
+        "name": "users",
+        "fields": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "constraints": "PRIMARY KEY AUTOINCREMENT"
+          },
+          {
+            "name": "username",
+            "type": "TEXT",
+            "constraints": "UNIQUE NOT NULL"
+          },
+          {
+            "name": "password_hash",
+            "type": "TEXT",
+            "constraints": "NOT NULL"
+          },
+          {
+            "name": "email",
+            "type": "TEXT",
+            "constraints": "UNIQUE NOT NULL"
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "constraints": "DEFAULT CURRENT_TIMESTAMP"
+          }
+        ]
+      },
+      {
+        "name": "posts",
+        "fields": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "constraints": "PRIMARY KEY AUTOINCREMENT"
+          },
+          {
+            "name": "title",
+            "type": "TEXT",
+            "constraints": "NOT NULL"
+          },
+          {
+            "name": "content",
+            "type": "TEXT",
+            "constraints": "NOT NULL"
+          },
+          {
+            "name": "author_id",
+            "type": "INTEGER",
+            "constraints": "NOT NULL"
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "constraints": "DEFAULT CURRENT_TIMESTAMP"
+          },
+          {
+            "name": "updated_at",
+            "type": "DATETIME",
+            "constraints": "DEFAULT CURRENT_TIMESTAMP"
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      "Users 1--* Posts"
+    ]
+  },
+  "api_endpoints": [
+    {
+      "module": "auth",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "description": "User login",
+      "auth_required": false
+    },
+    {
+      "module": "auth",
+      "method": "POST",
+      "path": "/api/auth/register",
+      "description": "User registration",
+      "auth_required": false
+    },
+    {
+      "module": "auth",
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "description": "User logout",
+      "auth_required": true
+    },
+    {
+      "module": "auth",
+      "method": "POST",
+      "path": "/api/auth/refresh",
+      "description": "Token refresh",
+      "auth_required": true
+    },
+    {
+      "module": "posts",
+      "method": "GET",
+      "path": "/api/posts",
+      "description": "Get all posts",
+      "auth_required": false
+    },
+    {
+      "module": "posts",
+      "method": "GET",
+      "path": "/api/posts/{id}",
+      "description": "Get post by ID",
+      "auth_required": false
+    },
+    {
+      "module": "posts",
+      "method": "POST",
+      "path": "/api/posts",
+      "description": "Create a new post",
+      "auth_required": true
+    },
+    {
+      "module": "posts",
+      "method": "PUT",
+      "path": "/api/posts/{id}",
+      "description": "Update a post",
+      "auth_required": true
+    },
+    {
+      "module": "posts",
+      "method": "DELETE",
+      "path": "/api/posts/{id}",
+      "description": "Delete a post",
+      "auth_required": true
+    }
+  ],
+  "modules": [
+    "auth",
+    "posts",
+    "users"
+  ],
+  "auth_strategy": "JWT",
+  "file_structure": {
+    "backend": [
+      "src/config/index.py",
+      "src/middleware/auth.py",
+      "src/middleware/cors.py",
+      "src/modules/auth/auth.routes.py",
+      "src/modules/auth/auth.controller.py",
+      "src/modules/auth/auth.service.py",
+      "src/modules/posts/posts.routes.py",
+      "src/modules/posts/posts.controller.py",
+      "src/modules/posts/posts.service.py",
+      "src/modules/users/users.routes.py",
+      "src/modules/users/users.controller.py",
+      "src/modules/users/users.service.py"
+    ],
+    "frontend": [
+      "src/services/api.js",
+      "src/pages/Login.jsx",
+      "src/pages/Register.jsx",
+      "src/pages/PostList.jsx",
+      "src/pages/PostDetail.jsx",
+      "src/pages/CreatePost.jsx",
+      "src/components/Layout.jsx",
+      "src/components/PostCard.jsx"
+    ]
+  },
+  "cors_config": {
+    "allowed_origins": [
+      "http://localhost:3000"
+    ],
+    "allowed_methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ],
+    "allow_credentials": true
+  },
+  "env_vars": {
+    "backend": [
+      "PORT",
+      "DATABASE_URL",
+      "JWT_SECRET",
+      "CORS_ORIGIN"
+    ],
+    "frontend": [
+      "REACT_APP_API_URL"
+    ]
+  },
+  "notes": "The system is designed to be modular, allowing for easy expansion and maintenance. Each module is self-contained with its own routes, controllers, services, and tests."
+}
