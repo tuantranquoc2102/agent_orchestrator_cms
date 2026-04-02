@@ -1,0 +1,245 @@
+{
+  "database": {
+    "tables": [
+      {
+        "name": "users",
+        "fields": [
+          {
+            "name": "id",
+            "type": "serial",
+            "constraints": "PRIMARY KEY"
+          },
+          {
+            "name": "username",
+            "type": "varchar(50)",
+            "constraints": "UNIQUE NOT NULL"
+          },
+          {
+            "name": "email",
+            "type": "varchar(100)",
+            "constraints": "UNIQUE NOT NULL"
+          },
+          {
+            "name": "password_hash",
+            "type": "varchar(255)",
+            "constraints": "NOT NULL"
+          },
+          {
+            "name": "created_at",
+            "type": "timestamp",
+            "constraints": "DEFAULT CURRENT_TIMESTAMP"
+          }
+        ]
+      },
+      {
+        "name": "products",
+        "fields": [
+          {
+            "name": "id",
+            "type": "serial",
+            "constraints": "PRIMARY KEY"
+          },
+          {
+            "name": "name",
+            "type": "varchar(100)",
+            "constraints": "NOT NULL"
+          },
+          {
+            "name": "description",
+            "type": "text",
+            "constraints": "NOT NULL"
+          },
+          {
+            "name": "price",
+            "type": "decimal(10, 2)",
+            "constraints": "NOT NULL"
+          },
+          {
+            "name": "is_digital",
+            "type": "boolean",
+            "constraints": "DEFAULT FALSE"
+          },
+          {
+            "name": "created_at",
+            "type": "timestamp",
+            "constraints": "DEFAULT CURRENT_TIMESTAMP"
+          }
+        ]
+      },
+      {
+        "name": "orders",
+        "fields": [
+          {
+            "name": "id",
+            "type": "serial",
+            "constraints": "PRIMARY KEY"
+          },
+          {
+            "name": "user_id",
+            "type": "int",
+            "constraints": "REFERENCES users(id) ON DELETE CASCADE"
+          },
+          {
+            "name": "total_amount",
+            "type": "decimal(10, 2)",
+            "constraints": "NOT NULL"
+          },
+          {
+            "name": "created_at",
+            "type": "timestamp",
+            "constraints": "DEFAULT CURRENT_TIMESTAMP"
+          }
+        ]
+      },
+      {
+        "name": "order_items",
+        "fields": [
+          {
+            "name": "id",
+            "type": "serial",
+            "constraints": "PRIMARY KEY"
+          },
+          {
+            "name": "order_id",
+            "type": "int",
+            "constraints": "REFERENCES orders(id) ON DELETE CASCADE"
+          },
+          {
+            "name": "product_id",
+            "type": "int",
+            "constraints": "REFERENCES products(id) ON DELETE CASCADE"
+          },
+          {
+            "name": "quantity",
+            "type": "int",
+            "constraints": "NOT NULL"
+          },
+          {
+            "name": "price",
+            "type": "decimal(10, 2)",
+            "constraints": "NOT NULL"
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      "Users 1--* Orders",
+      "Orders 1--* Order_Items",
+      "Products 1--* Order_Items"
+    ]
+  },
+  "api_endpoints": [
+    {
+      "module": "auth",
+      "method": "POST",
+      "path": "/api/auth/register",
+      "description": "User registration",
+      "auth_required": false
+    },
+    {
+      "module": "auth",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "description": "User login",
+      "auth_required": false
+    },
+    {
+      "module": "auth",
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "description": "User logout",
+      "auth_required": true
+    },
+    {
+      "module": "auth",
+      "method": "POST",
+      "path": "/api/auth/refresh-token",
+      "description": "Token refresh",
+      "auth_required": true
+    },
+    {
+      "module": "products",
+      "method": "GET",
+      "path": "/api/products",
+      "description": "Get all products",
+      "auth_required": false
+    },
+    {
+      "module": "products",
+      "method": "GET",
+      "path": "/api/products/{id}",
+      "description": "Get product by ID",
+      "auth_required": false
+    },
+    {
+      "module": "orders",
+      "method": "POST",
+      "path": "/api/orders",
+      "description": "Create a new order",
+      "auth_required": true
+    },
+    {
+      "module": "orders",
+      "method": "GET",
+      "path": "/api/orders",
+      "description": "Get all orders for the authenticated user",
+      "auth_required": true
+    }
+  ],
+  "modules": [
+    "auth",
+    "products",
+    "orders"
+  ],
+  "auth_strategy": "JWT",
+  "file_structure": {
+    "backend": [
+      "src/config/index.py",
+      "src/middleware/auth.py",
+      "src/middleware/cors.py",
+      "src/modules/auth/auth.routes.py",
+      "src/modules/auth/auth.controller.py",
+      "src/modules/auth/auth.service.py",
+      "src/modules/products/products.routes.py",
+      "src/modules/products/products.controller.py",
+      "src/modules/products/products.service.py",
+      "src/modules/orders/orders.routes.py",
+      "src/modules/orders/orders.controller.py",
+      "src/modules/orders/orders.service.py"
+    ],
+    "frontend": [
+      "src/services/api.js",
+      "src/pages/Login.jsx",
+      "src/pages/Register.jsx",
+      "src/pages/ProductList.jsx",
+      "src/pages/ProductDetail.jsx",
+      "src/pages/OrderHistory.jsx",
+      "src/components/Layout.jsx",
+      "src/components/ProductCard.jsx"
+    ]
+  },
+  "cors_config": {
+    "allowed_origins": [
+      "http://localhost:3000"
+    ],
+    "allowed_methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ],
+    "allow_credentials": true
+  },
+  "env_vars": {
+    "backend": [
+      "PORT",
+      "DATABASE_URL",
+      "JWT_SECRET",
+      "CORS_ORIGIN"
+    ],
+    "frontend": [
+      "REACT_APP_API_URL"
+    ]
+  },
+  "notes": "The architecture is designed to be modular, allowing for easy scaling and maintenance. Each module is self-contained, ensuring separation of concerns."
+}
